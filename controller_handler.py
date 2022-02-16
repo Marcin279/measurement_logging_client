@@ -17,12 +17,9 @@ class Controller:
         serial_port = serial.Serial(port=self.port, baudrate=self.baud_rate)
         it = 0
         while len(self.buffer) < self.how_many_data:
-            it += 1
-            if it > 100:
-                it = 0
-                line = serial_port.readline().decode('ascii')
-                data = self.extract_data(line)
-                self.buffer.append(data)
+            line = serial_port.readline().decode('ascii')
+            data = self.extract_data(line)
+            self.buffer.append(data)
         return self.buffer
 
     @classmethod
