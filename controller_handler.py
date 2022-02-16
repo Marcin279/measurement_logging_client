@@ -11,14 +11,18 @@ class Controller:
         self.port: str = port
         self.baud_rate: int = baud_rate
         self.how_many_data: int = how_many_data
-        self.buffer: List[Tuple[Data]] = list()
+        self.buffer: List[Tuple[Data, Data]] = list()
 
     def read_data_from_port(self):
         serial_port = serial.Serial(port=self.port, baudrate=self.baud_rate)
+        it = 0
         while len(self.buffer) < self.how_many_data:
-            line = serial_port.readline().decode('ascii')
-            data = self.extract_data(line)
-            self.buffer.append(data)
+            it += 1
+            if it > 100:
+                it = 0
+                line = serial_port.readline().decode('ascii')
+                data = self.extract_data(line)
+                self.buffer.append(data)
         return self.buffer
 
     @classmethod
@@ -28,7 +32,7 @@ class Controller:
         split_temp = line[1].split(sep=': ')
         date = datetime.now().isoformat()
 
-        fotorezystor = Data(split_fotorezystor[0], split_fotorezystor[1], 'mV', timestamp)
+        fotorezystor = Data(split_fotorezystor[0], split_fotorezystor[1], 'mV', date)
         temperatura = Data(split_temp[0], split_temp[1], 'oC', date)
         return fotorezystor, temperatura
 

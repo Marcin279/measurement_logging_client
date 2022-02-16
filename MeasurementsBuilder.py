@@ -1,6 +1,9 @@
 from abc import ABC, abstractmethod
 from typing import Tuple, Dict
+import json
 
+
+# Wzorzec projektowy Builder
 
 class Measurement:
 
@@ -8,20 +11,20 @@ class Measurement:
         self.measurement: Dict = {
             "programId": "",
             "sensorType": "",
-            "microController": "",
+            "microcontroller": "",
             "serialPortNumber": 0,
             "baudRate": 0,
             "measurements": []
         }
 
     def set_microcontroller_name(self, name: str):
-        self.measurement["programID"] = name
+        self.measurement["microcontroller"] = name
 
     def set_sensor_type(self, type_name: str):
         self.measurement["sensorType"] = type_name
 
     def set_program_id(self, program_id: str):
-        self.measurement["microController"] = program_id
+        self.measurement["programId"] = program_id
 
     def set_serial_port_number(self, port_number: int):
         self.measurement["serialPortNumber"] = port_number
@@ -33,6 +36,9 @@ class Measurement:
         self.measurement["measurements"].append(
             dict(type=measurement_type, value=value, unit=unit, date=date)
         )
+
+    def __str__(self):
+        return json.dumps(self.measurement)
 
 
 class MeasurementBuilder(ABC):
@@ -70,7 +76,7 @@ class MeasurementBuilder(ABC):
         pass
 
 
-class TemperatureMeasurementBuilder(MeasurementBuilder):
+class ConcreteMeasurementBuilder(MeasurementBuilder):
 
     def __init__(self):
         self.measurement = Measurement()
@@ -101,3 +107,5 @@ class TemperatureMeasurementBuilder(MeasurementBuilder):
 
     def build(self):
         return self.measurement
+
+

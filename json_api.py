@@ -1,33 +1,53 @@
 import json
-import controller_handler
-import api_client
+from controller_handler import Controller, Data
+from MeasurementsBuilder import ConcreteMeasurementBuilder, Measurement
 
 # Zczytywanie danych działa - poprawić format danych
-data = controller_handler.Controller(port='COM3', baud_rate=115200, how_many_data=10).read_data_from_port()
-temp_data = [elem[1] for elem in data]
-fotor_data = [elem[0] for elem in data]
 
-print(temp_data)
 
-# measurements_type_temp = {"type": "Temperature",
-#                      "value": 50,
-#                      "unit": "oC",
-#                      "timestamp": "2022-02-14T18:59:36+00:00"}
-#
-# measurements_type_fotor = {"type": "Fotoresistor",
-#                      "value": 50,
-#                      "unit": "mV",
-#                      "timestamp": "2022-02-14T18:59:36+00:00"}
+# temp_data = [elem[1] for elem in data]
+con = Controller(port='COM3', baud_rate=115200, how_many_data=10)
+data = con.read_data_from_port()
 
-dict_structure = {
-    "program_id": "kod",
-    "sensor_type": "DHT11",
-    "ucontroller": "Arduino UNO",
-    "serial_port_number": 3,
-    "baud_rate": 115200,
-    "measurements": ["measurements_type", "measurements_type"]
-}
 
-y = json.dumps(dict_structure)
+def build_API():
+    con = Controller(port='COM3', baud_rate=115200, how_many_data=10)
+    data = con.read_data_from_port()
+    fotor_data = [elem[0] for elem in data]
+    builder = ConcreteMeasurementBuilder()
+    builder.microcontroller_name("Arduino Uno")
+    builder.sensor_type("DS18B20")
+    builder.serial_port_number(con.get_port())
+    builder.program_id("fs4fasfasfhj4kdv")
+    builder.baud_rate(con.get_baud_rate())
+    for temp, fotor in data:
+        builder.one_measurement(measurement_type=temp.type,
+                                value=temp.value,
+                                unit=temp.unit,
+                                date=temp.date)
+
+        builder.one_measurement(measurement_type=fotor.type,
+                                value=fotor.value,
+                                unit=fotor.unit,
+                                date=fotor.date)
+
+    return builder.build()
+
+
+y = build_API()
 
 print(y)
+
+#     return fotoresistor_builder.build()
+# dict_structure = {
+#     "program_id": "kod",
+#     "sensor_type": "DHT11",
+#     "ucontroller": "Arduino UNO",
+#     "serial_port_number": 3,
+#     "baud_rate": 115200,
+#     "measurements": [temp_data, fotor_data]
+# }
+
+# y = json.dumps(dict_structure)
+
+# print(y)
