@@ -29,9 +29,9 @@ class Measurement:
     def set_baud_rate(self, baud_rate: int):
         self.measurement["baudRate"] = baud_rate
 
-    def append_measurement_value(self, measurement_type: str, value: int, unit: str, timestamp: str):
+    def append_measurement_value(self, measurement_type: str, value: int, unit: str, date: str):
         self.measurement["measurements"].append(
-            dict(type=measurement_type, value=value, unit=unit, timestamp=timestamp)
+            dict(type=measurement_type, value=value, unit=unit, date=date)
         )
 
 
@@ -58,7 +58,7 @@ class MeasurementBuilder(ABC):
         pass
 
     @abstractmethod
-    def one_measurement(self, measurement_type: str, value: int, unit: str, timestamp: str):
+    def one_measurement(self, measurement_type: str, value: int, unit: str, date: str):
         pass
 
     @abstractmethod
@@ -90,11 +90,11 @@ class TemperatureMeasurementBuilder(MeasurementBuilder):
     def baud_rate(self, baud_rate: int):
         self.measurement.set_baud_rate(baud_rate=baud_rate)
 
-    def one_measurement(self, measurement_type: str, value: int, unit: str, timestamp: str):
+    def one_measurement(self, measurement_type: str, value: int, unit: str, date: str):
         self.measurement.append_measurement_value(measurement_type=measurement_type,
                                                   value=value,
                                                   unit=unit,
-                                                  timestamp=timestamp)
+                                                  date=date)
 
     def reset(self):
         self.measurement = Measurement()

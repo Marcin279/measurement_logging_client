@@ -1,9 +1,9 @@
 from collections import namedtuple
 import serial
 from typing import List, Tuple
-from datetime import datetime
+from datetime import datetime, date
 
-Data = namedtuple('Data', ['type', 'value', 'unit', 'timestamp'])
+Data = namedtuple('Data', ['type', 'value', 'unit', 'date'])
 
 
 class Controller:
@@ -26,10 +26,10 @@ class Controller:
         line = line.split(sep=',')
         split_fotorezystor = line[0].split(sep=': ')
         split_temp = line[1].split(sep=': ')
-        timestamp = datetime.now().isoformat()
+        date = datetime.now().isoformat()
 
         fotorezystor = Data(split_fotorezystor[0], split_fotorezystor[1], 'mV', timestamp)
-        temperatura = Data(split_temp[0], split_temp[1], 'oC', timestamp)
+        temperatura = Data(split_temp[0], split_temp[1], 'oC', date)
         return fotorezystor, temperatura
 
     def get_baud_rate(self):
